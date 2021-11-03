@@ -100,6 +100,24 @@ def getFrameInput( text ):
     print("Entry (in frame) : " + str( t ) )
     return t
 
+def getMinTMaxTSizeEventAndFileNameInput():
+
+    print ("Enter time information in frame. You can also set in days, hour, minutes")
+    print ("valid entries: 100, 1d, 1.5d, 23.5h, 1d 2h 3m 4s 5f")
+
+
+    tmin = getFrameInput("Starting t")
+    tmax = getFrameInput("Ending t")
+    
+    mesz = getFrameInput("Minimum size of an event ? (Frame)")
+    mesp = getFrameInput("Minimum size of separation between two events ?(Frame)")
+
+    text_file_name = input("Enter file name to save data (.txt will be added) : ")
+    text_file_name = text_file_name+".txt"
+    text_file = open ( text_file_name, "w")
+
+    return tmin,tmax,text_file, mesz, mesp
+
 
 def getMinTMaxTAndFileNameInput():
 

@@ -19,7 +19,7 @@ import matplotlib.patches as mpatches
 
 
 from tkinter.filedialog import askopenfilename
-from lmtanalysis.Util import getMinTMaxTAndFileNameInput
+from lmtanalysis.Util import getMinTMaxTAndFileNameInput, getMinTMaxTSizeEventAndFileNameInput
 from lmtanalysis.EventTimeLineCache import EventTimeLineCached
 from lmtanalysis.FileUtil import *
 from lmtanalysis.Util import getFileNameInput, getStarsFromPvalues
@@ -32,7 +32,7 @@ from matplotlib.offsetbox import TextArea, DrawingArea, OffsetImage, AnnotationB
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 
-def computeProfile(file, minT, maxT, night, text_file):
+def computeProfile(file, minT, maxT, night, text_file, min_event_size, min_event_separation):
     
     connection = sqlite3.connect( file )
     
@@ -78,7 +78,8 @@ def computeProfile(file, minT, maxT, night, text_file):
             print( "computing individual event: {}".format(behavEvent))    
             
             behavEventTimeLine = EventTimeLineCached( connection, file, behavEvent, animal, minFrame=minT, maxFrame=maxT )
-            
+            behavEventTimeLine.mergeCloseEvents(min_event_separation)
+            behavEventTimeLine.removeEventsBelowLength(min_event_size)
             totalEventDuration = behavEventTimeLine.getTotalLength()
             nbEvent = behavEventTimeLine.getNumberOfEvent(minFrame = minT, maxFrame = maxT )
             print( "total event duration: " , totalEventDuration )                
@@ -1095,7 +1096,7 @@ if __name__ == '__main__':
 
         if answer == "1":
             files = getFilesToProcess()
-            tmin, tmax, text_file = getMinTMaxTAndFileNameInput()
+            tmin, tmax, text_file, mesz, mesp = getMinTMaxTSizeEventAndFileNameInput()
 
             profileData = {}
             nightComputation = input("Compute profile only during night events (Y or N)? ")
@@ -1115,7 +1116,9 @@ if __name__ == '__main__':
                     maxT = tmax
                     n = 0
                     #Compute profile2 data and save them in a text file
-                    profileData[file][n] = computeProfile(file = file, minT=minT, maxT=maxT, night=n, text_file=text_file)
+                    profileData[file][n] = computeProfile(file = file, minT=minT, maxT=maxT, 
+                                                          night=n, text_file=text_file,
+                                                          min_event_size=15, min_event_separation=15)
                     text_file.write( "\n" )
                     # Create a json file to store the computation
                     with open("profile_data_{}.json".format('no_night'), 'w') as fp:
