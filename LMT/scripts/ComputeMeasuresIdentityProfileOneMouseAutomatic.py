@@ -1118,7 +1118,7 @@ if __name__ == '__main__':
                     #Compute profile2 data and save them in a text file
                     profileData[file][n] = computeProfile(file = file, minT=minT, maxT=maxT, 
                                                           night=n, text_file=text_file,
-                                                          min_event_size=15, min_event_separation=15)
+                                                          min_event_size=mesz, min_event_separation=mesp)
                     text_file.write( "\n" )
                     # Create a json file to store the computation
                     with open("profile_data_{}.json".format('no_night'), 'w') as fp:
